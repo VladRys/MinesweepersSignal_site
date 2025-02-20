@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <title>Сигналы для Сапёра</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #121212;
+            color: #fff;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(5, 60px);
+            grid-gap: 8px;
+            padding: 10px;
+            background: #1e1e1e;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #444;
+            border-radius: 8px;
+            font-size: 24px;
+            font-weight: bold;
+            transition: transform 0.5s, background 0.3s;
+            transform: rotateY(0deg);
+            cursor: pointer;
+        }
+        .cell.revealed {
+            background-color: #2a2a2a;
+            transform: rotateY(180deg);
+        }
+        .star {
+            color: #ffd700;
+            text-shadow: 0 0 8px #ffcc00;
+        }
+        .button {
+            margin-top: 0px;
+            height: 60px; 
+            background-color: white; 
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+            font-family: "Inter", serif;
+            font-weight: 500;
+            font-size: 20px;
+            padding: 10px 30px;
+        }
+        .button:hover {
+            transform: scale(1.1); 
+        }
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            height: 20px;
+            visibility: hidden;
+        }
+        .dot {
+            width: 12px;
+            height: 12px;
+            margin: 0 6px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #bfc2c9, #ffffff);
+            opacity: 0.5;
+            animation: blink 2s infinite;
+        }
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <h2></h2>
+    <div class="grid" id="grid"></div>
+    <div class="loading" id="loading">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+    <button class="button" id="regenerate">
+        Получить сигнал
+    </button>
+    <script>
+        function generateField() {
+            const grid = document.getElementById("grid");
+            grid.innerHTML = "";
+            
+            const cells = [];
+            const starIndexes = new Set();
+            while (starIndexes.size < 3) {
+                starIndexes.add(Math.floor(Math.random() * 25));
+            }
+            
+            for (let i = 0; i < 25; i++) {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                grid.appendChild(cell);
+                cells.push(cell);
+            }
+            
+            grid.addEventListener("click", () => {
+                cells.forEach((cell, index) => {
+                    cell.classList.add("revealed");
+                    if (starIndexes.has(index)) {
+                        cell.textContent = "★";
+                        cell.classList.add("star");
+                    }
+                });
+            }, { once: true });
+        }
+        
+        document.getElementById("regenerate").addEventListener("click", () => {
+            const button = document.getElementById("regenerate");
+            const loadingDots = document.getElementById("loading");
+            button.style.display = "none";
+            loadingDots.style.visibility = "visible";
+            
+            setTimeout(() => {
+                loadingDots.style.visibility = "hidden";
+                button.style.display = "flex";
+                generateField();
+            }, 2000);
+        });
+        
+        generateField();
+    </script>
+</body>
+</html>
